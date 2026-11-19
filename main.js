@@ -106,11 +106,63 @@
       scrollPct.textContent = `${pct.toString().padStart(3, '0')}% SCROLLED`;
     }
 
+    // --- ACT I: WALLET PHYSICS & BALANCE TILT ---
+    const act1Progress = Math.min(1, Math.max(0, progress / 0.20));
+    const walletCard = document.getElementById('wallet-card');
+    const walletBalance = document.getElementById('wallet-balance');
+    const meterFill = document.getElementById('meter-fill');
+    const meterVal = document.getElementById('meter-val');
+
+    if (walletCard) {
+      if (act1Progress > 0 && act1Progress < 1) {
+        const tiltX = -6 * Math.sin(act1Progress * Math.PI);
+        const tiltY = 12 * Math.sin(act1Progress * Math.PI);
+        const liftY = -28 * act1Progress;
+        walletCard.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translateY(${liftY}px) scale(${1 + act1Progress * 0.03})`;
+        walletCard.style.borderColor = `rgba(34, 211, 238, ${0.2 + act1Progress * 0.4})`;
+      } else if (act1Progress >= 1) {
+        walletCard.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-28px) scale(1.03)`;
+        walletCard.style.borderColor = `rgba(34, 211, 238, 0.2)`;
+      } else {
+        walletCard.style.transform = `none`;
+        walletCard.style.borderColor = `rgba(34, 211, 238, 0.2)`;
+      }
+    }
+
+    if (walletBalance && meterFill) {
+      // Balance tilts from 25,000.00 down to 24,500.00 as 500 USDC point is born
+      const balanceInt = Math.round(25000 - 500 * act1Progress);
+      walletBalance.textContent = balanceInt.toLocaleString('en-US');
+      meterFill.style.width = `${((balanceInt / 25000) * 100).toFixed(1)}%`;
+      if (meterVal) {
+        meterVal.textContent = `${balanceInt.toLocaleString('en-US')}.00 USDC`;
+      }
+    }
+
     // Trajectory calculation across viewport
     const t = progress;
-    // Base trajectory: Anti-gravity arc traveling upward/across
-    signal.targetX = viewport.width * (0.65 - 0.25 * Math.sin(t * Math.PI));
-    signal.targetY = viewport.height * (0.55 - 0.3 * Math.cos(t * Math.PI * 0.7));
+    if (t <= 0.20) {
+      // Act 1: Birth in wallet cradle, then buoyant float upward
+      const cardRect = walletCard ? walletCard.getBoundingClientRect() : null;
+      let startX = viewport.width * 0.55;
+      let startY = viewport.height * 0.65;
+      if (cardRect) {
+        startX = cardRect.right - 70;
+        startY = cardRect.top + 70;
+      }
+      const exitX = viewport.width * 0.62;
+      const exitY = viewport.height * 0.42;
+
+      signal.targetX = startX + (exitX - startX) * Math.pow(act1Progress, 1.2);
+      // Anti-gravity buoyant curve
+      signal.targetY = startY + (exitY - startY) * Math.sin(act1Progress * Math.PI * 0.5) - 30 * Math.sin(act1Progress * Math.PI);
+      signal.radius = CONFIG.particle.baseRadius * (0.8 + 0.6 * act1Progress);
+    } else {
+      // Base trajectory for subsequent acts: Anti-gravity arc traveling across viewport
+      signal.targetX = viewport.width * (0.65 - 0.25 * Math.sin(t * Math.PI));
+      signal.targetY = viewport.height * (0.55 - 0.3 * Math.cos(t * Math.PI * 0.7));
+      signal.radius = CONFIG.particle.baseRadius;
+    }
   }
 
   // --- Particle Trail & Physics ---
@@ -210,6 +262,39 @@
     ctx.beginPath();
     ctx.arc(signal.x, signal.y, radius * 1.3, 0, Math.PI * 2);
     ctx.stroke();
+
+    // Act 1 Special Visuals: Embryonic Birth Cradle & Orbital Filaments
+    if (scrollProgress <= 0.22 && !prefersReducedMotion) {
+      const act1p = Math.min(1, Math.max(0, scrollProgress / 0.20));
+      const cradleFade = 1 - act1p * 0.7;
+
+      // Concentric gravitational wavelets
+      for (let r = 1; r <= 3; r++) {
+        const ringRadius = (radius * 3 + r * 16 + (timestamp * 0.035 * r) % 36);
+        const ringAlpha = (1 - (ringRadius / 90)) * 0.35 * cradleFade;
+        if (ringAlpha > 0) {
+          ctx.strokeStyle = `rgba(${signal.color.r}, ${signal.color.g}, ${signal.color.b}, ${ringAlpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.arc(signal.x, signal.y, ringRadius, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      // Orbital sparks
+      const sparkCount = 3;
+      for (let i = 0; i < sparkCount; i++) {
+        const angle = (timestamp * 0.003 * (i + 1) * 0.8) + (i * (Math.PI * 2 / sparkCount));
+        const dist = radius * 2.5 + 8 * Math.sin(timestamp * 0.005 + i);
+        const sx = signal.x + Math.cos(angle) * dist;
+        const sy = signal.y + Math.sin(angle) * dist;
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.8 * cradleFade})`;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 1.6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
   }
 
   // --- Listeners ---
