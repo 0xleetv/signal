@@ -789,43 +789,5 @@
   onScroll();
   requestAnimationFrame(render);
 
-  // Dismiss loader reliably: immediate check if document already ready, with a guaranteed 2000ms fallback
-  const loaderEl = document.getElementById('loader');
-  if (loaderEl) {
-    let dismissed = false;
-    const dismissLoader = () => {
-      if (dismissed) return;
-      dismissed = true;
-      loaderEl.classList.add('loaded');
-      setTimeout(() => {
-        loaderEl.style.display = 'none';
-      }, 650);
-    };
-
-    // 1. Guaranteed 2-second fallback timeout so it NEVER hangs
-    const fallbackTimer = setTimeout(dismissLoader, 2000);
-
-    // 2. Immediate dismissal if document is already loaded
-    if (document.readyState === 'complete') {
-      clearTimeout(fallbackTimer);
-      dismissLoader();
-    } else {
-      // 3. Fast dismissal on font ready or window load
-      if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => {
-          clearTimeout(fallbackTimer);
-          dismissLoader();
-        }).catch(() => {
-          clearTimeout(fallbackTimer);
-          dismissLoader();
-        });
-      }
-      window.addEventListener('load', () => {
-        clearTimeout(fallbackTimer);
-        dismissLoader();
-      }, { once: true });
-    }
-  }
-
-  console.log('[SIGNAL] All 5 Acts, responsive layout, and bulletproof loader initialized.');
+  console.log('[SIGNAL] All 5 Acts initialized cleanly with immediate presentation.');
 })();
