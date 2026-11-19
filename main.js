@@ -98,6 +98,16 @@
       if (telemetryAct) {
         telemetryAct.textContent = `ACT 0${activeAct}`;
       }
+      if (telemetryHash) {
+        const hashes = [
+          '0x7f9a...3c21', // Act 1
+          '0x12b4...88ef', // Act 2
+          '0x9e88...a440', // Act 3 (Block Root)
+          '0x4d31...99bc', // Act 4
+          '0x0000...beef'  // Act 5
+        ];
+        telemetryHash.textContent = hashes[activeAct - 1] || '0x7f9a...3c21';
+      }
       document.documentElement.style.setProperty('--current-accent', `var(--accent-act${activeAct})`);
     }
 
