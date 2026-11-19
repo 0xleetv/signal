@@ -789,5 +789,5 @@
   onScroll();
   requestAnimationFrame(render);
 
-  console.log('[SIGNAL] All 5 Acts initialized cleanly with immediate presentation.');
+  console.log('[SIGNAL] Scaffolding initialized successfully.');
 })();

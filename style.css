@@ -111,21 +111,12 @@ html, body {
 }
 
 .act {
-  min-height: 120vh;
+  min-height: 140vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 8vh 10vw;
+  padding: 10vh 10vw;
   position: relative;
-}
-
-/* Act 1 starts close to the masthead, eliminating the large vertical void */
-.act-1 {
-  min-height: 100vh;
-  justify-content: flex-start;
-  padding-top: clamp(5rem, 12vh, 7rem);
-  padding-bottom: 8vh;
-  perspective: 1200px;
 }
 
 .act-inner {
@@ -133,47 +124,35 @@ html, body {
   position: relative;
 }
 
-/* Restyled Clean Badge with No Slashes */
 .act-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   color: var(--current-accent);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   transition: color 0.4s ease;
 }
 
-.act-tag .tag-num {
-  display: inline-block;
-  padding: 0.15rem 0.45rem;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
-  font-family: monospace;
-}
-
-.act-tag .tag-name {
-  color: var(--text-dim);
-}
-
 .act-title {
-  font-size: clamp(2.2rem, 5.5vw, 4.75rem);
+  font-size: clamp(2.5rem, 6.5vw, 5.25rem);
   font-weight: 700;
-  line-height: 0.98;
+  line-height: 0.95;
   letter-spacing: -0.04em;
   text-transform: uppercase;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
 
 .act-lead {
-  font-size: clamp(0.95rem, 1.5vw, 1.15rem);
-  line-height: 1.45;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.5;
   color: var(--text-dim);
   font-weight: 300;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+/* Act 1 Card & Anti-Gravity Cradle */
+.act-1 {
+  perspective: 1200px;
 }
 
 .wallet-display {
@@ -581,43 +560,14 @@ html, body {
   font-family: monospace;
 }
 
-/* Colophon */
-.colophon {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  padding: 1.5rem 2.5rem;
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  z-index: 10;
-  mix-blend-mode: difference;
-  pointer-events: none;
-}
-
-
-
 /* Responsive */
 @media (max-width: 768px) {
-  .masthead, .colophon {
+  .masthead {
     padding: 1rem 1.25rem;
   }
   .act {
-    padding: 6vh 6vw;
-    min-height: 105vh;
-  }
-  .act-1 {
-    padding-top: 5rem;
-  }
-  .wallet-display, .handoff-hud, .chain-hud, .quorum-card, .settled-card {
-    padding: 1.5rem;
-    border-radius: 1rem;
-  }
-  .validator-nodes {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
+    padding: 8vh 6vw;
+    min-height: 120vh;
   }
 }
 
