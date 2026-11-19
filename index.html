@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SIGNAL — The Anti-Gravity Transaction Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="loader" class="loader" aria-hidden="true">
+    <div class="loader-pulse"></div>
+    <span class="loader-label">INITIALIZING SIGNAL</span>
+  </div>
+
+  <canvas id="stage" class="stage-canvas" aria-hidden="true"></canvas>
+
+  <header class="masthead">
+    <div class="masthead-brand">
+      <span class="brand-glyph">✦</span>
+      <span class="brand-title">SIGNAL</span>
+    </div>
+    <div class="masthead-telemetry">
+      <span class="badge" id="telemetry-act">ACT I</span>
+      <span class="telemetry-metric" id="telemetry-hash">0x7f9a...3c21</span>
+    </div>
+  </header>
+
+  <main id="story" class="story-container">
+    <!-- ACT I: WALLET -->
+    <section class="act act-1" id="act-1" data-act="1">
+      <div class="act-inner">
+        <div class="act-tag">ACT 01 / ORIGIN</div>
+        <h1 class="act-title">THE POINT IS BORN.</h1>
+        <p class="act-lead">An unspent authorization awakens. Potential energy collapses into intent as the ledger balance tilts.</p>
+        
+        <div class="wallet-display" id="wallet-card">
+          <div class="wallet-header">
+            <span class="wallet-pill">SMART ACCOUNT // ERC-4337</span>
+            <span class="wallet-network">INCENTIV MAINNET</span>
+          </div>
+          <div class="balance-wrap">
+            <span class="balance-currency">USDC</span>
+            <span class="balance-integer" id="wallet-balance">24,500</span>
+            <span class="balance-fraction">.00</span>
+          </div>
+          <div class="balance-delta" id="balance-delta">
+            <span class="delta-arrow">↓</span>
+            <span class="delta-amount">-500.00 USDC</span>
+            <span class="delta-label">PENDING RELEASE</span>
+          </div>
+          <div class="wallet-footer">
+            <div class="vault-meter">
+              <div class="meter-bar" id="meter-fill"></div>
+            </div>
+            <div class="meter-labels">
+              <span>VAULT RESERVE</span>
+              <span id="meter-val">24,000.00 USDC</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT II: HANDOFF -->
+    <section class="act act-2" id="act-2" data-act="2">
+      <div class="act-inner">
+        <div class="act-tag">ACT 02 / TRANSIT</div>
+        <h2 class="act-title">INTO THE PIPE.</h2>
+        <p class="act-lead">Severing local custody. The signal enters the mempool corridor, accelerated by validator relays.</p>
+        <div class="handoff-hud" id="handoff-card">
+          <div class="hud-item">
+            <span class="hud-label">PROPAGATION</span>
+            <span class="hud-value" id="prop-speed">12.4 ms</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">RELAY NODES</span>
+            <span class="hud-value" id="node-count">128 PEERS</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">PAYMASTER</span>
+            <span class="hud-value">GAS SPONSORED</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT III: THE CHAIN -->
+    <section class="act act-3" id="act-3" data-act="3">
+      <div class="act-inner">
+        <div class="act-tag">ACT 03 / CONSENSUS</div>
+        <h2 class="act-title">THE CHAIN RECEIVES.</h2>
+        <p class="act-lead">Crystallizing into state. The signal fuses into block #18,492,031, anchoring beneath cryptographic weight.</p>
+        <div class="chain-hud" id="chain-card">
+          <div class="block-badge" id="block-num">BLOCK #18,492,031</div>
+          <div class="block-hash">ROOT: 0x9e88...a440</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT IV: CONFIRMATION -->
+    <section class="act act-4" id="act-4" data-act="4">
+      <div class="act-inner">
+        <div class="act-tag">ACT 04 / VERIFICATION</div>
+        <h2 class="act-title">CHECKMARKS RIPPLE.</h2>
+        <p class="act-lead">Consensus cascading through the validator network. Waves of geometric finality propagate across the globe.</p>
+        <div class="consensus-grid" id="consensus-grid">
+          <div class="quorum-card">
+            <span class="quorum-count" id="quorum-count">64 / 64</span>
+            <span class="quorum-label">VALIDATOR ATTESTATIONS</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACT V: SETTLED -->
+    <section class="act act-5" id="act-5" data-act="5">
+      <div class="act-inner">
+        <div class="act-tag">ACT 05 / FINALITY</div>
+        <h2 class="act-title">THE LEDGER BREATHES.</h2>
+        <p class="act-lead">Immutable, irreversible, and settled forever on-chain. The universe rests in absolute equilibrium.</p>
+        <div class="settled-card" id="settled-card">
+          <div class="settled-status">
+            <span class="settled-glyph">✓</span>
+            <span class="settled-text">TRANSACTION EXECUTED</span>
+          </div>
+          <div class="settled-details">
+            <div class="row"><span>BLOCK LATENCY</span><strong>0.84 s</strong></div>
+            <div class="row"><span>EFFECTIVE GAS</span><strong>0.00 USDC (SPONSORED)</strong></div>
+            <div class="row"><span>STATE TRANSITION</span><strong>VERIFIED TRUE</strong></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <div class="colophon-left">
+      <span>0xleetv Studio · SIGNAL</span>
+    </div>
+    <div class="colophon-right">
+      <span id="scroll-pct">000% SCROLLED</span>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,434 @@
+/* SIGNAL — Style System */
+:root {
+  --bg-primary: #060709;
+  --bg-surface: rgba(18, 20, 26, 0.75);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --text-main: #f3f4f6;
+  --text-dim: #9ca3af;
+  --text-muted: #6b7280;
+
+  /* Per-act shifting accent colors */
+  --accent-act1: #22d3ee; /* Electric Cyan: Wallet birth */
+  --accent-act2: #f59e0b; /* Amber Gold: Propagation pipe */
+  --accent-act3: #a855f7; /* Royal Violet: Blockchain consensus */
+  --accent-act4: #06b6d4; /* Vivid Teal: Quorum ripples */
+  --accent-act5: #10b981; /* Emerald Green: Final settled equilibrium */
+
+  --current-accent: var(--accent-act1);
+
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --easing-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed Canvas for Anti-Gravity Particle & Mesh */
+.stage-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Masthead HUD */
+.masthead {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+.masthead-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-glyph {
+  color: var(--current-accent);
+  font-size: 1.1rem;
+  transition: color 0.4s ease;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.25em;
+  color: var(--text-main);
+}
+
+.masthead-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.8rem;
+  font-family: monospace;
+}
+
+.badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-subtle);
+  color: var(--current-accent);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  transition: color 0.4s ease, border-color 0.4s ease;
+}
+
+.telemetry-metric {
+  color: var(--text-dim);
+}
+
+/* Story Scroller Sections */
+.story-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.act {
+  min-height: 140vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 10vh 10vw;
+  position: relative;
+}
+
+.act-inner {
+  max-width: 680px;
+  position: relative;
+}
+
+.act-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--current-accent);
+  margin-bottom: 1.5rem;
+  transition: color 0.4s ease;
+}
+
+.act-title {
+  font-size: clamp(2.5rem, 6.5vw, 5.25rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.act-lead {
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--text-dim);
+  font-weight: 300;
+  margin-bottom: 2.5rem;
+}
+
+/* Act 1 Card */
+.wallet-display {
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 2rem;
+  transition: transform 0.6s var(--easing-smooth), border-color 0.4s ease;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+}
+
+.wallet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.wallet-pill {
+  color: var(--accent-act1);
+  font-weight: 600;
+}
+
+.wallet-network {
+  color: var(--text-muted);
+}
+
+.balance-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.balance-currency {
+  font-size: 1.25rem;
+  color: var(--text-dim);
+}
+
+.balance-integer {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  letter-spacing: -0.03em;
+}
+
+.balance-fraction {
+  font-size: 1.5rem;
+  color: var(--text-dim);
+}
+
+.balance-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.wallet-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1.25rem;
+}
+
+.vault-meter {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.meter-bar {
+  height: 100%;
+  width: 98%;
+  background: var(--accent-act1);
+  transition: width 0.3s ease;
+}
+
+.meter-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+/* Act 2 HUD */
+.handoff-hud, .chain-hud, .quorum-card, .settled-card {
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 2rem;
+}
+
+.handoff-hud {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.hud-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+
+.hud-value {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--accent-act2);
+  font-family: monospace;
+}
+
+/* Act 3 HUD */
+.chain-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: monospace;
+}
+
+.block-badge {
+  color: var(--accent-act3);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.block-hash {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Act 4 HUD */
+.quorum-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.quorum-count {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--accent-act4);
+  font-family: monospace;
+}
+
+.quorum-label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+}
+
+/* Act 5 Card */
+.settled-card {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.settled-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--accent-act5);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.settled-glyph {
+  font-size: 1.5rem;
+}
+
+.settled-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.settled-details .row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 0.5rem;
+}
+
+.settled-details .row:last-child {
+  border-bottom: none;
+}
+
+.settled-details strong {
+  color: var(--text-main);
+  font-family: monospace;
+}
+
+/* Colophon */
+.colophon {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  z-index: 10;
+  mix-blend-mode: difference;
+  pointer-events: none;
+}
+
+/* Loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.loader-pulse {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-act1);
+  box-shadow: 0 0 24px var(--accent-act1);
+  animation: pulse 1.6s infinite ease-in-out;
+}
+
+.loader-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .masthead, .colophon {
+    padding: 1rem 1.25rem;
+  }
+  .act {
+    padding: 8vh 6vw;
+    min-height: 120vh;
+  }
+}
+
+/* Prefers Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    scroll-behavior: auto;
+  }
+  .wallet-display, .loader-pulse {
+    animation: none;
+    transition: none;
+  }
+}
