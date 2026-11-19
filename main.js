@@ -789,5 +789,21 @@
   onScroll();
   requestAnimationFrame(render);
 
-  console.log('[SIGNAL] Scaffolding initialized successfully.');
+  // Dismiss loader upon font/window ready
+  const loaderEl = document.getElementById('loader');
+  if (loaderEl) {
+    const dismissLoader = () => {
+      setTimeout(() => {
+        loaderEl.classList.add('loaded');
+      }, 400);
+    };
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(dismissLoader).catch(dismissLoader);
+    } else {
+      window.addEventListener('load', dismissLoader);
+    }
+  }
+
+  console.log('[SIGNAL] All 5 Acts and loader initialized successfully.');
 })();
