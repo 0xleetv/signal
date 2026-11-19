@@ -139,6 +139,44 @@
       }
     }
 
+    // --- ACT II: PROPAGATION PIPE MATH ---
+    const act2Card = document.getElementById('handoff-card');
+    const propSpeedEl = document.getElementById('prop-speed');
+    const nodeCountEl = document.getElementById('node-count');
+    if (progress > 0.18 && progress <= 0.42) {
+      const act2p = Math.min(1, Math.max(0, (progress - 0.20) / 0.20));
+      if (act2Card) {
+        act2Card.style.borderColor = `rgba(245, 158, 11, ${0.2 + act2p * 0.5})`;
+        act2Card.style.transform = `translateY(${-12 * Math.sin(act2p * Math.PI)}px)`;
+      }
+      if (propSpeedEl) {
+        // Latency drops dynamically as relays accelerate
+        const speed = (28.4 - 16.0 * act2p).toFixed(1);
+        propSpeedEl.textContent = `${speed} ms`;
+      }
+      if (nodeCountEl) {
+        // Relay peers count increases as propagation spreads
+        const peers = Math.round(32 + 96 * act2p);
+        nodeCountEl.textContent = `${peers} PEERS`;
+      }
+    } else if (act2Card && progress <= 0.18) {
+      act2Card.style.borderColor = `rgba(245, 158, 11, 0.2)`;
+      act2Card.style.transform = `none`;
+    }
+
+    // --- ACT III: BLOCK TOWER CRYSTALLIZATION MATH ---
+    const act3Card = document.getElementById('chain-card');
+    if (progress > 0.38 && progress <= 0.62) {
+      const act3p = Math.min(1, Math.max(0, (progress - 0.40) / 0.20));
+      if (act3Card) {
+        act3Card.style.borderColor = `rgba(168, 85, 247, ${0.25 + act3p * 0.55})`;
+        act3Card.style.transform = `scale(${1 + 0.02 * Math.sin(act3p * Math.PI)})`;
+      }
+    } else if (act3Card && progress <= 0.38) {
+      act3Card.style.borderColor = `rgba(168, 85, 247, 0.25)`;
+      act3Card.style.transform = `none`;
+    }
+
     // Trajectory calculation across viewport
     const t = progress;
     if (t <= 0.20) {
@@ -154,11 +192,37 @@
       const exitY = viewport.height * 0.42;
 
       signal.targetX = startX + (exitX - startX) * Math.pow(act1Progress, 1.2);
-      // Anti-gravity buoyant curve
       signal.targetY = startY + (exitY - startY) * Math.sin(act1Progress * Math.PI * 0.5) - 30 * Math.sin(act1Progress * Math.PI);
       signal.radius = CONFIG.particle.baseRadius * (0.8 + 0.6 * act1Progress);
+    } else if (t <= 0.40) {
+      // Act 2: Handoff into the Pipe (Propagating horizontally across the screen into the mempool)
+      const p = (t - 0.20) / 0.20;
+      const pipeStartX = viewport.width * 0.62;
+      const pipeStartY = viewport.height * 0.42;
+      const pipeEndX = viewport.width * 0.70;
+      const pipeEndY = viewport.height * 0.52;
+
+      // Accelerated horizontal burst through the pipeline corridor
+      signal.targetX = pipeStartX + (pipeEndX - pipeStartX) * (p * 1.1 - 0.1 * Math.sin(p * Math.PI * 2));
+      signal.targetY = pipeStartY + (pipeEndY - pipeStartY) * p + 14 * Math.sin(p * Math.PI * 3);
+      signal.radius = CONFIG.particle.baseRadius * (1.2 + 0.4 * Math.sin(p * Math.PI));
+    } else if (t <= 0.60) {
+      // Act 3: The Chain (Entering the block tower, condensing and locking into place)
+      const p = (t - 0.40) / 0.20;
+      const towerX = viewport.width * 0.68;
+      const towerSnapY = viewport.height * 0.46;
+
+      // Spiral lock-in curve as it materializes into the top block of the chain
+      const snapEased = Math.pow(p, 1.8);
+      const orbitAngle = (1 - p) * Math.PI * 2.5;
+      const orbitRadius = (1 - snapEased) * 85;
+
+      signal.targetX = towerX + Math.cos(orbitAngle) * orbitRadius;
+      signal.targetY = towerSnapY + Math.sin(orbitAngle) * (orbitRadius * 0.45) - (1 - snapEased) * 50;
+      // Expands into a block mass during crystallization
+      signal.radius = CONFIG.particle.baseRadius * (1.1 + 0.8 * p);
     } else {
-      // Base trajectory for subsequent acts: Anti-gravity arc traveling across viewport
+      // Acts 4 & 5 base trajectory
       signal.targetX = viewport.width * (0.65 - 0.25 * Math.sin(t * Math.PI));
       signal.targetY = viewport.height * (0.55 - 0.3 * Math.cos(t * Math.PI * 0.7));
       signal.radius = CONFIG.particle.baseRadius;
@@ -293,6 +357,132 @@
         ctx.beginPath();
         ctx.arc(sx, sy, 1.6, 0, Math.PI * 2);
         ctx.fill();
+      }
+    }
+
+    // Act 2 Special Visuals: Propagation Conduit Pipe & Streamer Filaments
+    if (scrollProgress >= 0.16 && scrollProgress <= 0.44 && !prefersReducedMotion) {
+      const act2p = Math.min(1, Math.max(0, (scrollProgress - 0.20) / 0.20));
+      const pipeFade = Math.sin(act2p * Math.PI);
+
+      // Draw mempool corridor guide lines
+      const pipeStartX = viewport.width * 0.58;
+      const pipeStartY = viewport.height * 0.40;
+      const pipeEndX = viewport.width * 0.74;
+      const pipeEndY = viewport.height * 0.54;
+
+      ctx.save();
+      ctx.strokeStyle = `rgba(245, 158, 11, ${0.15 * pipeFade})`;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([8, 12]);
+      
+      // Top and bottom rail of the pipe
+      ctx.beginPath();
+      ctx.moveTo(pipeStartX, pipeStartY - 24);
+      ctx.lineTo(pipeEndX, pipeEndY - 24);
+      ctx.moveTo(pipeStartX, pipeStartY + 24);
+      ctx.lineTo(pipeEndX, pipeEndY + 24);
+      ctx.stroke();
+
+      // Traveling stream particles within the conduit
+      const streamerCount = 8;
+      for (let s = 0; s < streamerCount; s++) {
+        const streamT = ((timestamp * 0.0008 + s / streamerCount) % 1);
+        const stX = pipeStartX + (pipeEndX - pipeStartX) * streamT;
+        const stY = (pipeStartY + (pipeEndY - pipeStartY) * streamT) + 12 * Math.sin(streamT * Math.PI * 4);
+        
+        ctx.fillStyle = `rgba(245, 158, 11, ${(1 - streamT) * 0.4 * pipeFade})`;
+        ctx.beginPath();
+        ctx.arc(stX, stY, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Act 3 Special Visuals: Growing Tower of Blocks & Crystallizing Isometric Block
+    if (scrollProgress >= 0.36 && scrollProgress <= 0.65) {
+      const act3p = Math.min(1, Math.max(0, (scrollProgress - 0.40) / 0.20));
+      const towerFade = Math.min(1, Math.max(0, (scrollProgress - 0.36) / 0.06)) * (scrollProgress > 0.62 ? Math.max(0, 1 - (scrollProgress - 0.62) / 0.03) : 1);
+
+      // Base coordinates for the block tower
+      const towerBaseX = viewport.width * 0.68;
+      const towerBaseY = viewport.height * 0.52;
+      const blockWidth = 52;
+      const blockHeight = 28;
+      const layerSpacing = 32;
+
+      // Draw helper: Isometric 3D Block
+      function drawIsoBlock(cx, cy, w, h, alpha, isHero, glow) {
+        ctx.save();
+        ctx.globalAlpha = alpha * towerFade;
+
+        // Top face
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - h * 0.5);
+        ctx.lineTo(cx + w * 0.5, cy);
+        ctx.lineTo(cx, cy + h * 0.5);
+        ctx.lineTo(cx - w * 0.5, cy);
+        ctx.closePath();
+        ctx.fillStyle = isHero ? 'rgba(192, 132, 252, 0.45)' : 'rgba(50, 40, 70, 0.4)';
+        ctx.fill();
+        ctx.strokeStyle = isHero ? 'rgba(216, 180, 254, 0.9)' : 'rgba(168, 85, 247, 0.35)';
+        ctx.lineWidth = isHero ? 1.5 : 1;
+        ctx.stroke();
+
+        // Left face
+        ctx.beginPath();
+        ctx.moveTo(cx - w * 0.5, cy);
+        ctx.lineTo(cx, cy + h * 0.5);
+        ctx.lineTo(cx, cy + h * 0.5 + 16);
+        ctx.lineTo(cx - w * 0.5, cy + 16);
+        ctx.closePath();
+        ctx.fillStyle = isHero ? 'rgba(147, 51, 234, 0.6)' : 'rgba(30, 25, 45, 0.5)';
+        ctx.fill();
+        ctx.stroke();
+
+        // Right face
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + h * 0.5);
+        ctx.lineTo(cx + w * 0.5, cy);
+        ctx.lineTo(cx + w * 0.5, cy + 16);
+        ctx.lineTo(cx, cy + h * 0.5 + 16);
+        ctx.closePath();
+        ctx.fillStyle = isHero ? 'rgba(126, 34, 206, 0.7)' : 'rgba(20, 15, 30, 0.6)';
+        ctx.fill();
+        ctx.stroke();
+
+        if (glow) {
+          ctx.shadowColor = '#a855f7';
+          ctx.shadowBlur = 20;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      // Draw the previous 3 historical blocks of the chain
+      drawIsoBlock(towerBaseX, towerBaseY + layerSpacing * 2, blockWidth, blockHeight, 0.4, false, false);
+      drawIsoBlock(towerBaseX, towerBaseY + layerSpacing * 1, blockWidth, blockHeight, 0.65, false, false);
+      drawIsoBlock(towerBaseX, towerBaseY, blockWidth, blockHeight, 0.85, false, false);
+
+      // The 4th Block: Crystallized from the Signal point of light
+      if (act3p > 0.15) {
+        const snapT = Math.min(1, (act3p - 0.15) / 0.85);
+        const heroY = (towerBaseY - layerSpacing) - (1 - Math.pow(snapT, 2)) * 60;
+        const heroAlpha = Math.min(1, snapT * 1.3);
+        drawIsoBlock(towerBaseX, heroY, blockWidth, blockHeight, heroAlpha, true, snapT > 0.9);
+
+        // Flash ripple upon block lock-in
+        if (snapT > 0.85 && !prefersReducedMotion) {
+          const rippleRatio = (snapT - 0.85) / 0.15;
+          ctx.save();
+          ctx.strokeStyle = `rgba(168, 85, 247, ${(1 - rippleRatio) * 0.8 * towerFade})`;
+          ctx.lineWidth = 2 * (1 - rippleRatio);
+          ctx.beginPath();
+          ctx.ellipse(towerBaseX, heroY + 8, blockWidth * (0.6 + rippleRatio * 0.8), blockHeight * (0.6 + rippleRatio * 0.8), 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
       }
     }
   }

@@ -284,19 +284,35 @@ html, body {
   font-family: monospace;
 }
 
-/* Act 2 HUD */
+/* Act 2 HUD & Conduit Pipe */
 .handoff-hud, .chain-hud, .quorum-card, .settled-card {
   background: var(--bg-surface);
   backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: 1.25rem;
   padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
 }
 
 .handoff-hud {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1.5rem;
+  border-color: rgba(245, 158, 11, 0.2);
+  transition: border-color 0.4s ease, transform 0.4s ease;
+}
+
+.handoff-hud::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-act2), transparent);
+  opacity: 0.8;
 }
 
 .hud-item {
@@ -318,23 +334,56 @@ html, body {
   font-family: monospace;
 }
 
-/* Act 3 HUD */
+/* Act 3 HUD & Block Tower */
 .chain-hud {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-family: monospace;
+  border-color: rgba(168, 85, 247, 0.25);
+  transition: border-color 0.4s ease;
+}
+
+.chain-hud::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-act3), transparent);
+  opacity: 0.8;
+}
+
+.chain-hud-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-family: monospace;
+  width: 100%;
 }
 
 .block-badge {
   color: var(--accent-act3);
   font-weight: 700;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 .block-hash {
   color: var(--text-muted);
   font-size: 0.85rem;
+}
+
+.tower-stats {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+}
+
+.tower-stats strong {
+  color: var(--accent-act3);
 }
 
 /* Act 4 HUD */
