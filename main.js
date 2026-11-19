@@ -299,11 +299,98 @@
       signal.targetY = centerY - 15 * Math.sin(p * Math.PI * 2);
       // Breathing pulse as consensus accumulates
       signal.radius = CONFIG.particle.baseRadius * (1.3 + 0.7 * Math.sin(p * Math.PI * 3));
+    // --- ACT V: SETTLED & FINAL EQUILIBRIUM MATH ---
+    const act5Card = document.getElementById('settled-card');
+    const act5Section = document.getElementById('act-5');
+    const act5Title = act5Section ? act5Section.querySelector('.act-title') : null;
+    if (progress > 0.78) {
+      const act5p = Math.min(1, Math.max(0, (progress - 0.80) / 0.20));
+      if (act5Card) {
+        // Card settles into resting state with emerald border
+        act5Card.style.borderColor = `rgba(16, 185, 129, ${0.3 + act5p * 0.5})`;
+        act5Card.style.transform = `scale(${1 + 0.02 * act5p})`;
+        act5Card.style.boxShadow = `0 30px 60px rgba(0, 0, 0, 0.5), 0 0 ${40 + 30 * act5p}px rgba(16, 185, 129, ${0.12 + 0.18 * act5p})`;
+      }
+      if (act5Title) {
+        // Kinetic headline landing: drops down from anti-gravity into settled baseline
+        const dropOffset = (1 - Math.pow(act5p, 2)) * 36;
+        act5Title.style.transform = `translateY(${dropOffset}px)`;
+        act5Title.style.opacity = `${0.4 + 0.6 * act5p}`;
+      }
     } else {
-      // Act 5 base trajectory
-      signal.targetX = viewport.width * (0.65 - 0.25 * Math.sin(t * Math.PI));
-      signal.targetY = viewport.height * (0.55 - 0.3 * Math.cos(t * Math.PI * 0.7));
-      signal.radius = CONFIG.particle.baseRadius;
+      if (act5Card) {
+        act5Card.style.borderColor = `rgba(16, 185, 129, 0.3)`;
+        act5Card.style.transform = `none`;
+        act5Card.style.boxShadow = `0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.12)`;
+      }
+      if (act5Title) {
+        act5Title.style.transform = `translateY(36px)`;
+        act5Title.style.opacity = '0.4';
+      }
+    }
+
+    // Trajectory calculation across viewport
+    const t = progress;
+    if (t <= 0.20) {
+      // Act 1: Birth in wallet cradle, then buoyant float upward
+      const cardRect = walletCard ? walletCard.getBoundingClientRect() : null;
+      let startX = viewport.width * 0.55;
+      let startY = viewport.height * 0.65;
+      if (cardRect) {
+        startX = cardRect.right - 70;
+        startY = cardRect.top + 70;
+      }
+      const exitX = viewport.width * 0.62;
+      const exitY = viewport.height * 0.42;
+
+      signal.targetX = startX + (exitX - startX) * Math.pow(act1Progress, 1.2);
+      signal.targetY = startY + (exitY - startY) * Math.sin(act1Progress * Math.PI * 0.5) - 30 * Math.sin(act1Progress * Math.PI);
+      signal.radius = CONFIG.particle.baseRadius * (0.8 + 0.6 * act1Progress);
+    } else if (t <= 0.40) {
+      // Act 2: Handoff into the Pipe
+      const p = (t - 0.20) / 0.20;
+      const pipeStartX = viewport.width * 0.62;
+      const pipeStartY = viewport.height * 0.42;
+      const pipeEndX = viewport.width * 0.70;
+      const pipeEndY = viewport.height * 0.52;
+
+      signal.targetX = pipeStartX + (pipeEndX - pipeStartX) * (p * 1.1 - 0.1 * Math.sin(p * Math.PI * 2));
+      signal.targetY = pipeStartY + (pipeEndY - pipeStartY) * p + 14 * Math.sin(p * Math.PI * 3);
+      signal.radius = CONFIG.particle.baseRadius * (1.2 + 0.4 * Math.sin(p * Math.PI));
+    } else if (t <= 0.60) {
+      // Act 3: The Chain
+      const p = (t - 0.40) / 0.20;
+      const towerX = viewport.width * 0.68;
+      const towerSnapY = viewport.height * 0.46;
+
+      const snapEased = Math.pow(p, 1.8);
+      const orbitAngle = (1 - p) * Math.PI * 2.5;
+      const orbitRadius = (1 - snapEased) * 85;
+
+      signal.targetX = towerX + Math.cos(orbitAngle) * orbitRadius;
+      signal.targetY = towerSnapY + Math.sin(orbitAngle) * (orbitRadius * 0.45) - (1 - snapEased) * 50;
+      signal.radius = CONFIG.particle.baseRadius * (1.1 + 0.8 * p);
+    } else if (t <= 0.80) {
+      // Act 4: Confirmation
+      const p = (t - 0.60) / 0.20;
+      const centerX = viewport.width * 0.65;
+      const centerY = viewport.height * 0.48;
+
+      signal.targetX = centerX + 18 * Math.sin(p * Math.PI * 4);
+      signal.targetY = centerY - 15 * Math.sin(p * Math.PI * 2);
+      signal.radius = CONFIG.particle.baseRadius * (1.3 + 0.7 * Math.sin(p * Math.PI * 3));
+    } else {
+      // Act 5: Settled (The point glides to rest at equilibrium inside the final settlement seal)
+      const p = Math.min(1, Math.max(0, (t - 0.80) / 0.20));
+      const targetRestX = viewport.width * 0.68;
+      const targetRestY = viewport.height * 0.48;
+
+      // Gentle floating descent to resting equilibrium
+      signal.targetX = targetRestX + 8 * (1 - p) * Math.cos(p * Math.PI * 2);
+      signal.targetY = targetRestY + 6 * (1 - p) * Math.sin(p * Math.PI * 2);
+      // Soft single breath pulse at the end of the journey
+      const breathe = Math.sin(p * Math.PI);
+      signal.radius = CONFIG.particle.baseRadius * (1.2 + 0.6 * breathe);
     }
   }
 
@@ -620,8 +707,58 @@
       // Polyline checkmark centered at signal.x, signal.y
       ctx.moveTo(originX - checkScale * 0.6, originY - checkScale * 0.1);
       ctx.lineTo(originX - checkScale * 0.1, originY + checkScale * 0.45);
-      ctx.lineTo(originX + checkScale * 0.75, originY - checkScale * 0.55);
+      ctx.restore();
+    }
+
+    // Act 5 Special Visuals: The Piece Breathes Once & Enters Final Resting Equilibrium
+    if (scrollProgress >= 0.78) {
+      const act5p = Math.min(1, Math.max(0, (scrollProgress - 0.80) / 0.20));
+      const settleFade = Math.min(1, Math.max(0, (scrollProgress - 0.78) / 0.05));
+
+      ctx.save();
+      const originX = signal.x;
+      const originY = signal.y;
+
+      // 1. The Singular Breath Pulse Wave (Expands as the user reaches 100% and settles)
+      const breatheWaveT = Math.sin(act5p * Math.PI * 0.5);
+      const breatheRadius = 40 + breatheWaveT * 180;
+      const breatheAlpha = (1 - breatheWaveT * 0.8) * 0.4 * settleFade;
+
+      ctx.strokeStyle = `rgba(16, 185, 129, ${breatheAlpha})`;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.arc(originX, originY, breatheRadius, 0, Math.PI * 2);
       ctx.stroke();
+
+      // 2. Harmonic Equilibrium Orbit Rings (Resting seal around the settled point)
+      const ringCount = 2;
+      for (let k = 0; k < ringCount; k++) {
+        const ringRad = 24 + k * 16 + 4 * Math.sin(timestamp * 0.003 + k * Math.PI);
+        const ringA = (0.25 - k * 0.08) * settleFade;
+
+        ctx.strokeStyle = `rgba(16, 185, 129, ${ringA})`;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 6]);
+        ctx.beginPath();
+        ctx.arc(originX, originY, ringRad, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // 3. Resting Energy Petals (Subtle green equilibrium particles)
+      if (!prefersReducedMotion) {
+        const petalCount = 6;
+        for (let p = 0; p < petalCount; p++) {
+          const petalAngle = (p * Math.PI * 2 / petalCount) + timestamp * 0.001;
+          const petalDist = 32 + 5 * Math.sin(timestamp * 0.004 + p);
+          const px = originX + Math.cos(petalAngle) * petalDist;
+          const py = originY + Math.sin(petalAngle) * petalDist;
+
+          ctx.fillStyle = `rgba(16, 185, 129, ${0.7 * settleFade})`;
+          ctx.beginPath();
+          ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
 
       ctx.restore();
     }
