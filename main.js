@@ -187,6 +187,66 @@
       act3Card.style.transform = `none`;
     }
 
+    // --- ACT IV: CONFIRMATION & CONSENSUS RIPPLE MATH ---
+    const act4Card = document.getElementById('quorum-card');
+    const quorumCountEl = document.getElementById('quorum-count');
+    const quorumStatusEl = document.getElementById('quorum-status');
+    const quorumFillEl = document.getElementById('quorum-fill');
+    if (progress > 0.58 && progress <= 0.82) {
+      const act4p = Math.min(1, Math.max(0, (progress - 0.60) / 0.20));
+      if (act4Card) {
+        act4Card.style.borderColor = `rgba(6, 182, 212, ${0.25 + act4p * 0.55})`;
+        act4Card.style.transform = `translateY(${-8 * Math.sin(act4p * Math.PI)}px)`;
+      }
+
+      // Quorum count scales dynamically from 0 to 64
+      const attested = Math.round(act4p * 64);
+      if (quorumCountEl) {
+        quorumCountEl.textContent = `${attested.toString().padStart(2, '0')} / 64`;
+      }
+      if (quorumFillEl) {
+        quorumFillEl.style.width = `${(act4p * 100).toFixed(1)}%`;
+      }
+      if (quorumStatusEl) {
+        if (attested >= 64) {
+          quorumStatusEl.textContent = 'CONSENSUS REACHED (100%)';
+          quorumStatusEl.style.color = 'var(--accent-act4)';
+        } else if (attested >= 43) {
+          quorumStatusEl.textContent = 'SUPERMAJORITY VALIDATED';
+          quorumStatusEl.style.color = 'var(--accent-act4)';
+        } else {
+          quorumStatusEl.textContent = 'GATHERING ATTESTATIONS';
+          quorumStatusEl.style.color = 'var(--text-dim)';
+        }
+      }
+
+      // Ripple checkmarks through the 16 validator nodes
+      const activeCount = Math.floor(act4p * validatorNodes.length);
+      validatorNodes.forEach((node, idx) => {
+        if (idx < activeCount) {
+          node.classList.add('active');
+        } else {
+          node.classList.remove('active');
+        }
+      });
+    } else if (progress <= 0.58) {
+      if (act4Card) {
+        act4Card.style.borderColor = `rgba(6, 182, 212, 0.25)`;
+        act4Card.style.transform = `none`;
+      }
+      if (quorumCountEl) quorumCountEl.textContent = '00 / 64';
+      if (quorumFillEl) quorumFillEl.style.width = '0%';
+      if (quorumStatusEl) {
+        quorumStatusEl.textContent = 'GATHERING ATTESTATIONS';
+        quorumStatusEl.style.color = 'var(--text-dim)';
+      }
+      validatorNodes.forEach(node => node.classList.remove('active'));
+    } else if (progress > 0.82) {
+      if (quorumCountEl) quorumCountEl.textContent = '64 / 64';
+      if (quorumFillEl) quorumFillEl.style.width = '100%';
+      validatorNodes.forEach(node => node.classList.add('active'));
+    }
+
     // Trajectory calculation across viewport
     const t = progress;
     if (t <= 0.20) {
@@ -205,34 +265,42 @@
       signal.targetY = startY + (exitY - startY) * Math.sin(act1Progress * Math.PI * 0.5) - 30 * Math.sin(act1Progress * Math.PI);
       signal.radius = CONFIG.particle.baseRadius * (0.8 + 0.6 * act1Progress);
     } else if (t <= 0.40) {
-      // Act 2: Handoff into the Pipe (Propagating horizontally across the screen into the mempool)
+      // Act 2: Handoff into the Pipe
       const p = (t - 0.20) / 0.20;
       const pipeStartX = viewport.width * 0.62;
       const pipeStartY = viewport.height * 0.42;
       const pipeEndX = viewport.width * 0.70;
       const pipeEndY = viewport.height * 0.52;
 
-      // Accelerated horizontal burst through the pipeline corridor
       signal.targetX = pipeStartX + (pipeEndX - pipeStartX) * (p * 1.1 - 0.1 * Math.sin(p * Math.PI * 2));
       signal.targetY = pipeStartY + (pipeEndY - pipeStartY) * p + 14 * Math.sin(p * Math.PI * 3);
       signal.radius = CONFIG.particle.baseRadius * (1.2 + 0.4 * Math.sin(p * Math.PI));
     } else if (t <= 0.60) {
-      // Act 3: The Chain (Entering the block tower, condensing and locking into place)
+      // Act 3: The Chain
       const p = (t - 0.40) / 0.20;
       const towerX = viewport.width * 0.68;
       const towerSnapY = viewport.height * 0.46;
 
-      // Spiral lock-in curve as it materializes into the top block of the chain
       const snapEased = Math.pow(p, 1.8);
       const orbitAngle = (1 - p) * Math.PI * 2.5;
       const orbitRadius = (1 - snapEased) * 85;
 
       signal.targetX = towerX + Math.cos(orbitAngle) * orbitRadius;
       signal.targetY = towerSnapY + Math.sin(orbitAngle) * (orbitRadius * 0.45) - (1 - snapEased) * 50;
-      // Expands into a block mass during crystallization
       signal.radius = CONFIG.particle.baseRadius * (1.1 + 0.8 * p);
+    } else if (t <= 0.80) {
+      // Act 4: Confirmation (Pulsing at the geometric center of consensus while broadcasting ripple waves)
+      const p = (t - 0.60) / 0.20;
+      const centerX = viewport.width * 0.65;
+      const centerY = viewport.height * 0.48;
+
+      // Anti-gravity harmonic hovering oscillation
+      signal.targetX = centerX + 18 * Math.sin(p * Math.PI * 4);
+      signal.targetY = centerY - 15 * Math.sin(p * Math.PI * 2);
+      // Breathing pulse as consensus accumulates
+      signal.radius = CONFIG.particle.baseRadius * (1.3 + 0.7 * Math.sin(p * Math.PI * 3));
     } else {
-      // Acts 4 & 5 base trajectory
+      // Act 5 base trajectory
       signal.targetX = viewport.width * (0.65 - 0.25 * Math.sin(t * Math.PI));
       signal.targetY = viewport.height * (0.55 - 0.3 * Math.cos(t * Math.PI * 0.7));
       signal.radius = CONFIG.particle.baseRadius;
@@ -495,6 +563,68 @@
         }
       }
     }
+
+    // Act 4 Special Visuals: Checkmarks Ripple & Waves of Consensus Finality
+    if (scrollProgress >= 0.56 && scrollProgress <= 0.84) {
+      const act4p = Math.min(1, Math.max(0, (scrollProgress - 0.60) / 0.20));
+      const rippleFade = Math.min(1, Math.max(0, (scrollProgress - 0.56) / 0.04)) * (scrollProgress > 0.80 ? Math.max(0, 1 - (scrollProgress - 0.80) / 0.04) : 1);
+
+      ctx.save();
+      const originX = signal.x;
+      const originY = signal.y;
+
+      // 1. Concentric Expanding Consensus Shockwaves
+      const waveCount = 5;
+      for (let w = 0; w < waveCount; w++) {
+        const waveT = (timestamp * 0.0009 + w / waveCount) % 1;
+        const waveRadius = 30 + waveT * 220;
+        const waveAlpha = Math.sin(waveT * Math.PI) * 0.45 * rippleFade;
+
+        ctx.strokeStyle = `rgba(6, 182, 212, ${waveAlpha})`;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(originX, originY, waveRadius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // 8 Hexagonal Attestation Nodes stationed on the primary wavefront
+        if (w === 0 && !prefersReducedMotion) {
+          for (let h = 0; h < 8; h++) {
+            const hAngle = (h * Math.PI / 4) + timestamp * 0.0006;
+            const hx = originX + Math.cos(hAngle) * waveRadius;
+            const hy = originY + Math.sin(hAngle) * waveRadius;
+
+            ctx.fillStyle = `rgba(6, 182, 212, ${waveAlpha * 1.5})`;
+            ctx.beginPath();
+            ctx.arc(hx, hy, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Connect nodal radar filaments to center
+            ctx.strokeStyle = `rgba(6, 182, 212, ${waveAlpha * 0.2})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(originX, originY);
+            ctx.lineTo(hx, hy);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // 2. Holographic Checkmark radiating at the core of consensus
+      const checkScale = 14 + 4 * Math.sin(timestamp * 0.005);
+      const checkAlpha = (0.5 + 0.5 * act4p) * rippleFade;
+      ctx.strokeStyle = `rgba(255, 255, 255, ${checkAlpha * 0.95})`;
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      // Polyline checkmark centered at signal.x, signal.y
+      ctx.moveTo(originX - checkScale * 0.6, originY - checkScale * 0.1);
+      ctx.lineTo(originX - checkScale * 0.1, originY + checkScale * 0.45);
+      ctx.lineTo(originX + checkScale * 0.75, originY - checkScale * 0.55);
+      ctx.stroke();
+
+      ctx.restore();
+    }
   }
 
   // --- Listeners ---
@@ -503,6 +633,19 @@
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
     prefersReducedMotion = e.matches;
   });
+
+  // --- Initialize Validator Nodes (Act 4) ---
+  const validatorContainer = document.getElementById('validator-nodes');
+  const validatorNodes = [];
+  if (validatorContainer) {
+    for (let i = 0; i < 16; i++) {
+      const node = document.createElement('div');
+      node.className = 'val-node';
+      node.textContent = '✓';
+      validatorContainer.appendChild(node);
+      validatorNodes.push(node);
+    }
+  }
 
   // --- Initialize ---
   resizeCanvas();

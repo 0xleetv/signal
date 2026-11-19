@@ -112,10 +112,20 @@
         <div class="act-tag">ACT 04 / VERIFICATION</div>
         <h2 class="act-title">CHECKMARKS RIPPLE.</h2>
         <p class="act-lead">Consensus cascading through the validator network. Waves of geometric finality propagate across the globe.</p>
-        <div class="consensus-grid" id="consensus-grid">
-          <div class="quorum-card">
-            <span class="quorum-count" id="quorum-count">64 / 64</span>
-            <span class="quorum-label">VALIDATOR ATTESTATIONS</span>
+        <div class="consensus-container" id="consensus-container">
+          <div class="quorum-card" id="quorum-card">
+            <div class="quorum-top">
+              <span class="quorum-count" id="quorum-count">00 / 64</span>
+              <span class="quorum-status" id="quorum-status">GATHERING QUORUM</span>
+            </div>
+            <div class="quorum-bar">
+              <div class="quorum-fill" id="quorum-fill"></div>
+            </div>
+            <span class="quorum-label">64 INDEPENDENT ATTESTATIONS REQUIRED FOR FINALITY</span>
+          </div>
+
+          <div class="validator-nodes" id="validator-nodes" aria-hidden="true">
+            <!-- 16 representative consensus nodes generated dynamically -->
           </div>
         </div>
       </div>
