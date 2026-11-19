@@ -247,58 +247,6 @@
       validatorNodes.forEach(node => node.classList.add('active'));
     }
 
-    // Trajectory calculation across viewport
-    const t = progress;
-    if (t <= 0.20) {
-      // Act 1: Birth in wallet cradle, then buoyant float upward
-      const cardRect = walletCard ? walletCard.getBoundingClientRect() : null;
-      let startX = viewport.width * 0.55;
-      let startY = viewport.height * 0.65;
-      if (cardRect) {
-        startX = cardRect.right - 70;
-        startY = cardRect.top + 70;
-      }
-      const exitX = viewport.width * 0.62;
-      const exitY = viewport.height * 0.42;
-
-      signal.targetX = startX + (exitX - startX) * Math.pow(act1Progress, 1.2);
-      signal.targetY = startY + (exitY - startY) * Math.sin(act1Progress * Math.PI * 0.5) - 30 * Math.sin(act1Progress * Math.PI);
-      signal.radius = CONFIG.particle.baseRadius * (0.8 + 0.6 * act1Progress);
-    } else if (t <= 0.40) {
-      // Act 2: Handoff into the Pipe
-      const p = (t - 0.20) / 0.20;
-      const pipeStartX = viewport.width * 0.62;
-      const pipeStartY = viewport.height * 0.42;
-      const pipeEndX = viewport.width * 0.70;
-      const pipeEndY = viewport.height * 0.52;
-
-      signal.targetX = pipeStartX + (pipeEndX - pipeStartX) * (p * 1.1 - 0.1 * Math.sin(p * Math.PI * 2));
-      signal.targetY = pipeStartY + (pipeEndY - pipeStartY) * p + 14 * Math.sin(p * Math.PI * 3);
-      signal.radius = CONFIG.particle.baseRadius * (1.2 + 0.4 * Math.sin(p * Math.PI));
-    } else if (t <= 0.60) {
-      // Act 3: The Chain
-      const p = (t - 0.40) / 0.20;
-      const towerX = viewport.width * 0.68;
-      const towerSnapY = viewport.height * 0.46;
-
-      const snapEased = Math.pow(p, 1.8);
-      const orbitAngle = (1 - p) * Math.PI * 2.5;
-      const orbitRadius = (1 - snapEased) * 85;
-
-      signal.targetX = towerX + Math.cos(orbitAngle) * orbitRadius;
-      signal.targetY = towerSnapY + Math.sin(orbitAngle) * (orbitRadius * 0.45) - (1 - snapEased) * 50;
-      signal.radius = CONFIG.particle.baseRadius * (1.1 + 0.8 * p);
-    } else if (t <= 0.80) {
-      // Act 4: Confirmation (Pulsing at the geometric center of consensus while broadcasting ripple waves)
-      const p = (t - 0.60) / 0.20;
-      const centerX = viewport.width * 0.65;
-      const centerY = viewport.height * 0.48;
-
-      // Anti-gravity harmonic hovering oscillation
-      signal.targetX = centerX + 18 * Math.sin(p * Math.PI * 4);
-      signal.targetY = centerY - 15 * Math.sin(p * Math.PI * 2);
-      // Breathing pulse as consensus accumulates
-      signal.radius = CONFIG.particle.baseRadius * (1.3 + 0.7 * Math.sin(p * Math.PI * 3));
     // --- ACT V: SETTLED & FINAL EQUILIBRIUM MATH ---
     const act5Card = document.getElementById('settled-card');
     const act5Section = document.getElementById('act-5');
